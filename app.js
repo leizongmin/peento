@@ -18,7 +18,10 @@ var config = require('./config');
 var db = require('./lib/db');
 
 
+// init global namespace
 var ns = createNamespace();
+ns('config', config);
+
 
 // init express
 var app = express();

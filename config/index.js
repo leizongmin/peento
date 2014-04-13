@@ -17,3 +17,11 @@ config.mysql = {
 
 // 监听端口
 config.port = 3009;
+
+// Passport
+config.passport = {};
+// Github
+config.passport.github = {
+  clientID:     '1f201f78d8e6261d384d',
+  clientSecret: '6a9b5ab271be0cc87481479a3d8c9f40ff7dd7dd'
+};
