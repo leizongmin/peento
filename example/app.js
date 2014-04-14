@@ -10,3 +10,7 @@ var app = peento(require('./config'));
 
 
 app.start();
+
+
+
+console.log(app.ns());
