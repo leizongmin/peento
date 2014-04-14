@@ -85,9 +85,7 @@ PeentoApplication.prototype.listen = function (port) {
 
 PeentoApplication.prototype.start = function () {
   debug('start');
-
-  // TODO: 排序hook
-
+  this._initHooks();
   this.listen(this.ns('config.port'));
 };
 
@@ -127,4 +125,8 @@ PeentoApplication.prototype._registerHook = function (name, fn) {
   var hook = {};
   fn(this.ns, hook);
   this.ns('hook.' + name, hook);
+};
+
+PeentoApplication.prototype._initHooks = function () {
+  
 };
