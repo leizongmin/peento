@@ -22,6 +22,7 @@ var MySQLPool = require('lei-mysql');
 var MySQLModel = require('lei-mysql-model');
 var Pipe = require('lei-pipe');
 var errorhandler = require('./middleware/errorhandler');
+var assetsMiddleware = require('./middleware/assets');
 var utils = require('./lib/utils');
 var Plugin = require('./lib/plugin');
 var createDebug = require('./lib/debug');
@@ -52,7 +53,7 @@ function PeentoApplication (config) {
   app.use(session({
     keys: ['optional secret string']
   }));
-  app.use('/assets', serveStatic('./assets'));
+  app.use('/assets', assetsMiddleware(ns));
   app.use(csurf());
   app.use(timeout(30000));
 
