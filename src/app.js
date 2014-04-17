@@ -98,7 +98,7 @@ PeentoApplication.prototype._initTpl = function () {
   var ns = this.ns;
   var app = this.express;
 
-  var baseContext = expressLiquid.newContext();
+  var baseContext = this.context = expressLiquid.newContext();
   var filters = ns('filter');
   for (var i in filters) {
     if (i.substr(-5) === 'Async') {
@@ -295,4 +295,36 @@ PeentoApplication.prototype.call = function (name, params, callback) {
   ], function (err) {
     callback(err, params);
   });
+};
+
+PeentoApplication.prototype.useTheme = function (name) {
+  debug('useTheme %s', name);
+  var errs = [];
+  var m, filename;
+
+  // try to load from theme/specified path
+  try {
+    m = require(path.resolve('theme', name));
+  } catch (err) {
+    errs.push(err);
+  }
+
+  // try to load from package
+  if (!m) {
+    try {
+      m = require('peento-theme-' + name);
+    } catch (err) {
+      errs.push(err);
+    }
+  }
+
+  if (!m) {
+    m = this.ns('theme.' + name);
+  }
+
+  if (typeof m !== 'function') {
+    throw new Error('Theme ' + name + ' not found');
+  }
+
+  //this._registerHook(name, m);
 };
