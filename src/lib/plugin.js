@@ -149,8 +149,8 @@ Plugin.prototype.init = function () {
   this.initCalls();
   //this.initRouters();
   this.initMiddlewares();
-  //this.initAssets();
-  //this.initViews();
+  this.initAssets();
+  this.initViews();
 };
 
 Plugin.prototype.initHooks = function () {
@@ -220,5 +220,33 @@ Plugin.prototype.initMiddlewares = function () {
     var m = fn(ns, me.debug);
     me.debug('register middleware [%s]: %s', me.name, i);
     ns('middleware.' + i, m);
+  });
+};
+
+Plugin.prototype.initAssets = function () {
+  var me = this;
+  var ns = me.ns;
+
+  if (!ns('asset')) ns('asset', {});
+  var asset = ns('asset');
+
+  utils.objectEachKey(me.assets, function (i) {
+    var f = me.assets[i];
+    me.debug('register asset [%s]: %s', i, f);
+    asset[i] = f;
+  });
+};
+
+Plugin.prototype.initViews = function () {
+  var me = this;
+  var ns = me.ns;
+
+  if (!ns('view')) ns('view', {});
+  var view = ns('view');
+
+  utils.objectEachKey(me.views, function (i) {
+    var f = me.views[i];
+    me.debug('register view [%s]: %s', i, f);
+    view[i] = f;
   });
 };
