@@ -21,8 +21,7 @@ utils.filenameToNamespace = function (dir, filename) {
 utils.filenameToRelativePath = function (dir, filename) {
   dir = path.resolve(dir);
   filename = path.resolve(filename);
-  var ext = path.extname(filename);
-  var name = filename.slice(dir.length + 1, - ext.length);
+  var name = filename.slice(dir.length + 1);
   return name.replace(/(\\\/)/g, '/');
 };
 

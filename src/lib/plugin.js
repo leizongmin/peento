@@ -64,7 +64,7 @@ Plugin.prototype._dirFindEachFile = function (name, fn) {
   var debug = this.debug;
   var dir = this._dir(name);
   rd.eachFileSync(dir, function (f, s) {
-    var n = filenameToRelativePath(dir, f);
+    var n = utils.filenameToRelativePath(dir, f);
     debug('find %s: %s', n, f);
     fn(f, n);
   });
