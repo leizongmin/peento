@@ -17,6 +17,8 @@ var timeout = require('connect-timeout');
 var csurf = require('csurf');
 var rd = require('rd');
 var createNamespace = require('lei-ns').Namespace;
+var MySQLPool = require('lei-mysql');
+var MySQLModel = require('lei-mysql-model');
 var Pipe = require('lei-pipe');
 var errorhandler = require('./middleware/errorhandler');
 var utils = require('./lib/utils');
@@ -53,6 +55,8 @@ function PeentoApplication (config) {
   app.use(timeout(30000));
   app.use(errorhandler());
 
+  this._initDb();
+  this._loadModels();
   this._loadCalls();
   this._loadRouters();
   this._loadHooks();
@@ -66,6 +70,33 @@ PeentoApplication.prototype.listen = function (port) {
 PeentoApplication.prototype.start = function () {
   debug('start');
   this.listen(this.ns('config.port'));
+};
+
+PeentoApplication.prototype._initDb = function () {
+  debug('_initDb');
+  var ns = this.ns;
+  var db = new MySQLPool(ns('config.mysql'));
+  this.db = db;
+  ns('db', db);
+};
+
+PeentoApplication.prototype._loadModels = function () {
+  debug('_loadModels');
+  var me = this;
+  var ns = this.ns;
+  var DIR = path.resolve(__dirname, 'model');
+  rd.eachFileFilterSync(DIR, /\.js$/, function (f, s) {
+    debug(' - %s', f);
+    var n = utils.filenameToNamespace(DIR, f);
+    var m = require(f);
+    me._registerModel(n, m);
+  });
+};
+
+PeentoApplication.prototype._registerModel = function (n, fn) {
+  var ns = this.ns;
+  var m = fn(ns, MySQLModel.create, createDebug('model:' + n));
+  ns('model.' + n, m);
 };
 
 PeentoApplication.prototype._loadRouters = function () {
@@ -184,7 +215,7 @@ PeentoApplication.prototype.call = function (name, params, callback) {
     function (next) {
       debug('call: %s', name);
       call(params, function (err, data) {
-        data = params;
+        params = data;
         next(err);
       });
     },

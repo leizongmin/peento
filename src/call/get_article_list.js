@@ -7,8 +7,11 @@
 module.exports = function (ns, debug) {
   return function (params, callback) {
 
-    debug('call: %s', params);
-    callback(null, params);
+    // console.log('get_article_list', params);
+    ns('model.article_list').list({is_removed: 0}, {}, function (err, data) {
+      // console.log(data);
+      callback(err, data);
+    });
 
   }
 };
