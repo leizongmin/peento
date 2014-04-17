@@ -56,14 +56,6 @@ function PeentoApplication (config) {
   app.use(csurf());
   app.use(timeout(30000));
 
-  /*
-  this._loadFilters();
-  this._loadModels();
-  this._loadCalls();
-  this._loadRouters();
-  this._loadHooks();
-  */
-
   this._initTpl();
   this._useDefaultPlugin();
 
@@ -248,40 +240,6 @@ PeentoApplication.prototype.call = function (name, params, callback) {
 
 /******************************************************************************/
 /*
-PeentoApplication.prototype._loadFilters = function () {
-  debug('_loadFilters');
-  var me = this;
-  var ns = this.ns;
-  var DIR = path.resolve(__dirname, 'filter');
-  function register (n, fn) {
-    ns('filter.' + n, fn);
-  }
-  rd.eachFileFilterSync(DIR, /\.js$/, function (f, s) {
-    debug(' - %s', f);
-    var n = utils.filenameToNamespace(DIR, f);
-    var m = require(f);
-    m(ns, register, createDebug('filter:' + f));
-  });
-};
-
-PeentoApplication.prototype._loadModels = function () {
-  debug('_loadModels');
-  var me = this;
-  var ns = this.ns;
-  var DIR = path.resolve(__dirname, 'model');
-  rd.eachFileFilterSync(DIR, /\.js$/, function (f, s) {
-    debug(' - %s', f);
-    var n = utils.filenameToNamespace(DIR, f);
-    var m = require(f);
-    me._registerModel(n, m);
-  });
-};
-
-PeentoApplication.prototype._registerModel = function (n, fn) {
-  var ns = this.ns;
-  var m = fn(ns, MySQLModel.create, createDebug('model:' + n));
-  ns('model.' + n, m);
-};
 
 PeentoApplication.prototype._loadRouters = function () {
   debug('_loadRouters');

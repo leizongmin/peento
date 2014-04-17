@@ -7,6 +7,7 @@
 var path = require('path');
 var fs = require('fs');
 var rd = require('rd');
+var MySQLModel = require('lei-mysql-model');
 var utils = require('./utils');
 var createDebug = require('./debug');
 
@@ -144,10 +145,10 @@ Plugin.prototype.loadViews = function () {
 Plugin.prototype.init = function () {
   this.initHooks();
   this.initFilters();
-  //this.initModels();
-  //this.initCalls();
+  this.initModels();
+  this.initCalls();
   //this.initRouters();
-  //this.initMiddlewares();
+  this.initMiddlewares();
   //this.initAssets();
   //this.initViews();
 };
@@ -183,5 +184,41 @@ Plugin.prototype.initFilters = function () {
       me.debug('register filter [%s.%s]: %s', me.name, i, n);
       ns('filter.' + n, fn);
     }, me.debug);
+  });
+};
+
+Plugin.prototype.initModels = function () {
+  var me = this;
+  var ns = me.ns;
+
+  utils.objectEachKey(me.models, function (i) {
+    var fn = me.models[i];
+    var m = fn(ns, MySQLModel.create, me.debug);
+    me.debug('register model [%s]: %s', me.name, i);
+    ns('model.' + i, m);
+  });
+};
+
+Plugin.prototype.initCalls = function () {
+  var me = this;
+  var ns = me.ns;
+
+  utils.objectEachKey(me.calls, function (i) {
+    var fn = me.calls[i];
+    var m = fn(ns, me.debug);
+    me.debug('register call [%s]: %s', me.name, i);
+    ns('call.' + i, m);
+  });
+};
+
+Plugin.prototype.initMiddlewares = function () {
+  var me = this;
+  var ns = me.ns;
+
+  utils.objectEachKey(me.middlewares, function (i) {
+    var fn = me.middlewares[i];
+    var m = fn(ns, me.debug);
+    me.debug('register middleware [%s]: %s', me.name, i);
+    ns('middleware.' + i, m);
   });
 };
