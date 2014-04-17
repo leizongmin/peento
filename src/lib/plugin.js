@@ -28,6 +28,8 @@ function Plugin (name, ns, dir) {
   this.debug = createDebug('plugin:' + name);
 }
 
+/******************************************************************************/
+
 Plugin.prototype.load = function () {
   this.loadHooks();
   this.loadFilters();
@@ -50,12 +52,15 @@ Plugin.prototype._dirIsExisis = function (name) {
 
 Plugin.prototype._dirLoadEachJsFile = function (name, fn) {
   if (!this._dirIsExisis(name)) return;
-  var debug = this.debug;
-  var dir = this._dir(name);
+  var me = this;
+  var debug = me.debug;
+  var dir = me._dir(name);
   rd.eachFileFilterSync(dir, /\.js$/, function (f, s) {
     var n = utils.filenameToNamespace(dir, f);
     debug('load %s: %s', n, f);
-    fn(f, n, require(f));
+    var m = require(f);
+    m.plugin = me.name;
+    fn(f, n, m);
   });
 };
 
@@ -131,5 +136,52 @@ Plugin.prototype.loadViews = function () {
   var views = this.views;
   this._dirFindEachFile('view', function (f, n) {
     views[n] = f;
+  });
+};
+
+/******************************************************************************/
+
+Plugin.prototype.init = function () {
+  this.initHooks();
+  this.initFilters();
+  //this.initModels();
+  //this.initCalls();
+  //this.initRouters();
+  //this.initMiddlewares();
+  //this.initAssets();
+  //this.initViews();
+};
+
+Plugin.prototype.initHooks = function () {
+  var me = this;
+  var ns = me.ns;
+  var app = ns('app');
+  var hook = {};
+  ns('hook.' + me.name, hook);
+
+  utils.objectEachKey(me.hooks, function (i) {
+    var fn = me.hooks[i];
+    fn(ns, function registerHook (call, options, handler) {
+      me.debug('register hook [%s.%s]: %s', me.name, i, call);
+      var pipe = app._getCallPipe(call);
+      var args = utils.argumentsToArray(arguments);
+      args[0] = me.name;
+      pipe.add.apply(pipe, args);
+      hook[call] = args;
+    }, me.debug);
+  });
+};
+
+Plugin.prototype.initFilters = function () {
+  var me = this;
+  var ns = me.ns;
+  var app = ns('app');
+
+  utils.objectEachKey(me.filters, function (i) {
+    var fn = me.filters[i];
+    fn(ns, function registerFilter (n, fn) {
+      me.debug('register filter [%s.%s]: %s', me.name, i, n);
+      ns('filter.' + n, fn);
+    }, me.debug);
   });
 };

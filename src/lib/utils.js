@@ -25,7 +25,10 @@ utils.filenameToRelativePath = function (dir, filename) {
   return name.replace(/(\\\/)/g, '/');
 };
 
-
 utils.argumentsToArray = function (args) {
   return Array.prototype.slice.call(args, 0);
+};
+
+utils.objectEachKey = function (obj, fn) {
+  Object.keys(obj).forEach(fn);
 };

@@ -58,19 +58,14 @@ function PeentoApplication (config) {
 
   /*
   this._loadFilters();
-  this._initTpl();
-
-  this._initDb();
   this._loadModels();
   this._loadCalls();
   this._loadRouters();
   this._loadHooks();
   */
-  // default plugin
-  var plugin = new Plugin('default', ns, path.resolve(__dirname, 'default'));
-  ns('plugin.default', plugin);
-  require(plugin.dir)(ns, plugin, plugin.debug);
-  console.log(plugin);
+
+  this._initTpl();
+  this._useDefaultPlugin();
 
   app.use(errorhandler());
 }
@@ -82,24 +77,66 @@ PeentoApplication.prototype.listen = function (port) {
 
 PeentoApplication.prototype.start = function () {
   debug('start');
+  this._initDb();
+  this._initPlugins();
+  this._initFilters();
   this.listen(this.ns('config.port'));
 };
 
-PeentoApplication.prototype._loadFilters = function () {
-  debug('_loadFilters');
-  var me = this;
+/******************************************************************************/
+
+PeentoApplication.prototype._usePluginFromDir = function (name, dir) {
   var ns = this.ns;
-  var DIR = path.resolve(__dirname, 'filter');
-  function register (n, fn) {
-    ns('filter.' + n, fn);
+  var plugin = new Plugin(name, ns, dir);
+  ns('plugin.' + name, plugin);
+  require(plugin.dir)(ns, plugin, plugin.debug);
+
+  if (!Array.isArray(this._plugins)) this._plugins = [];
+  this._plugins.push(plugin);
+}
+
+PeentoApplication.prototype._useDefaultPlugin = function () {
+  this._usePluginFromDir('default', path.resolve(__dirname, 'default'));
+};
+
+PeentoApplication.prototype.usePlugin = function (name) {
+  var errs = [];
+  var m, f;
+
+  // try to load from working path: ./plugin/name
+  try {
+    f = path.resolve('plugin', name);
+    m = require(f);
+  } catch (err) {
+    errs.push(err);
   }
-  rd.eachFileFilterSync(DIR, /\.js$/, function (f, s) {
-    debug(' - %s', f);
-    var n = utils.filenameToNamespace(DIR, f);
-    var m = require(f);
-    m(ns, register, createDebug('filter:' + f));
+
+  // try to load from package
+  if (!m) {
+    try {
+      var n = 'peento-plugin-' + name;
+      m = require(n);
+      f = path.dirname(require.resolve(n));
+    } catch (err) {
+      errs.push(err);
+    }
+  }
+
+  if (typeof m !== 'function') {
+    throw new Error('Plugin ' + name + ' not found');
+  }
+
+  this._usePluginFromDir(name, f);
+};
+
+PeentoApplication.prototype._initPlugins = function () {
+  debug('_initPlugins');
+  this._plugins.forEach(function (plugin) {
+    plugin.init();
   });
 };
+
+/******************************************************************************/
 
 PeentoApplication.prototype._initTpl = function () {
   debug('_initTpl');
@@ -107,14 +144,6 @@ PeentoApplication.prototype._initTpl = function () {
   var app = this.express;
 
   var baseContext = this.context = expressLiquid.newContext();
-  var filters = ns('filter');
-  for (var i in filters) {
-    if (i.substr(-5) === 'Async') {
-      baseContext.setAsyncFilter(i.substr(0, i.length - 5), filters[i]);
-    } else {
-      baseContext.setFilter(i, filters[i]);
-    }
-  }
 
   app.set('views', path.resolve(__dirname, 'views'));
   app.set('view engine', 'liquid');
@@ -140,7 +169,21 @@ PeentoApplication.prototype._initTpl = function () {
 
     next();
   });
-}
+};
+
+PeentoApplication.prototype._initFilters = function () {
+  debug('_initFilters');
+  var ns = this.ns;
+  var baseContext = this.context;
+  var filters = ns('filter');
+  for (var i in filters) {
+    if (i.substr(-5) === 'Async') {
+      baseContext.setAsyncFilter(i.substr(0, i.length - 5), filters[i]);
+    } else {
+      baseContext.setFilter(i, filters[i]);
+    }
+  }
+};
 
 PeentoApplication.prototype._initDb = function () {
   debug('_initDb');
@@ -148,6 +191,77 @@ PeentoApplication.prototype._initDb = function () {
   var db = new MySQLPool(ns('config.mysql'));
   this.db = db;
   ns('db', db);
+};
+
+/******************************************************************************/
+
+PeentoApplication.prototype._getCallPipe = function (name) {
+  this._callPipes = this._callPipes || {};
+  this._callPipes[name] = this._callPipes[name] || new Pipe();
+  return this._callPipes[name];
+};
+
+PeentoApplication.prototype.call = function (name, params, callback) {
+  var me = this;
+  var ns = me.ns;
+
+  var call = ns('call.' + name);
+  if (typeof call !== 'function') {
+    return callback(new TypeError('Cannot call ' + name));
+  }
+
+  async.series([
+
+    // before.xxxx
+    function (next) {
+      debug('call: before %s', name);
+      var before = me._getCallPipe('before.' + name);
+      before.start(params, function (err, data) {
+        params = data;
+        next(err);
+      });
+    },
+
+    // xxxx
+    function (next) {
+      debug('call: %s', name);
+      call(params, function (err, data) {
+        params = data;
+        next(err);
+      });
+    },
+
+    // after.xxx
+    function (next) {
+      debug('call: after %s', name);
+      var after = me._getCallPipe('after.' + name);
+      after.start(params, function (err, data) {
+        params = data;
+        next(err);
+      });
+    }
+
+  ], function (err) {
+    callback(err, params);
+  });
+};
+
+/******************************************************************************/
+/*
+PeentoApplication.prototype._loadFilters = function () {
+  debug('_loadFilters');
+  var me = this;
+  var ns = this.ns;
+  var DIR = path.resolve(__dirname, 'filter');
+  function register (n, fn) {
+    ns('filter.' + n, fn);
+  }
+  rd.eachFileFilterSync(DIR, /\.js$/, function (f, s) {
+    debug(' - %s', f);
+    var n = utils.filenameToNamespace(DIR, f);
+    var m = require(f);
+    m(ns, register, createDebug('filter:' + f));
+  });
 };
 
 PeentoApplication.prototype._loadModels = function () {
@@ -253,86 +367,5 @@ PeentoApplication.prototype._registerHook = function (name, fn) {
     hook[call] = args;
   }, createDebug('hook.' + name));
 };
-
-PeentoApplication.prototype._getCallPipe = function (name) {
-  this._callPipes = this._callPipes || {};
-  this._callPipes[name] = this._callPipes[name] || new Pipe();
-  return this._callPipes[name];
-};
-
-PeentoApplication.prototype.call = function (name, params, callback) {
-  var me = this;
-  var ns = me.ns;
-
-  var call = ns('call.' + name);
-  if (typeof call !== 'function') {
-    return callback(new TypeError('Cannot call ' + name));
-  }
-
-  async.series([
-
-    // before.xxxx
-    function (next) {
-      debug('call: before %s', name);
-      var before = me._getCallPipe('before.' + name);
-      before.start(params, function (err, data) {
-        params = data;
-        next(err);
-      });
-    },
-
-    // xxxx
-    function (next) {
-      debug('call: %s', name);
-      call(params, function (err, data) {
-        params = data;
-        next(err);
-      });
-    },
-
-    // after.xxx
-    function (next) {
-      debug('call: after %s', name);
-      var after = me._getCallPipe('after.' + name);
-      after.start(params, function (err, data) {
-        params = data;
-        next(err);
-      });
-    }
-
-  ], function (err) {
-    callback(err, params);
-  });
-};
-
-PeentoApplication.prototype.useTheme = function (name) {
-  debug('useTheme %s', name);
-  var errs = [];
-  var m, filename;
-
-  // try to load from theme/specified path
-  try {
-    m = require(path.resolve('theme', name));
-  } catch (err) {
-    errs.push(err);
-  }
-
-  // try to load from package
-  if (!m) {
-    try {
-      m = require('peento-theme-' + name);
-    } catch (err) {
-      errs.push(err);
-    }
-  }
-
-  if (!m) {
-    m = this.ns('theme.' + name);
-  }
-
-  if (typeof m !== 'function') {
-    throw new Error('Theme ' + name + ' not found');
-  }
-
-  //this._registerHook(name, m);
-};
+*/
+/******************************************************************************/

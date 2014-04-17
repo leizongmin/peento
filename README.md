@@ -14,9 +14,9 @@ hook -------------- 钩子目录，xxx.js => hook.xxx
 model ------------- 数据模型目录，xxx.js => model.xxx
 call -------------- 系统调用程序目录，xxx.js => call.xxx
 moddleware -------- 中间件目录，xxx.js => middleware.xxx
-router ------------ 路由处理目录，自由注册
 view -------------- 模板文件目录，xxx.liquid => view.xxx
 asset ------------- 资源文件目录，xxx.xx => asset.xxx.xx
+router ------------ 路由处理目录，自由注册
 filter ------------ 模板函数目录，自由注册
 index.js ---------- 入口文件，初始化插件时调用
 ```
