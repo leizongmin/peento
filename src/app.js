@@ -58,8 +58,6 @@ function PeentoApplication (config) {
 
   this._initTpl();
   this._useDefaultPlugin();
-
-  app.use(errorhandler());
 }
 
 PeentoApplication.prototype.listen = function (port) {
@@ -72,6 +70,7 @@ PeentoApplication.prototype.start = function () {
   this._initDb();
   this._initPlugins();
   this._initFilters();
+  this.express.use(errorhandler());
   this.listen(this.ns('config.port'));
 };
 

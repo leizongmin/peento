@@ -7,6 +7,7 @@
 var path = require('path');
 var fs = require('fs');
 var rd = require('rd');
+var express = require('express');
 var MySQLModel = require('lei-mysql-model');
 var utils = require('./utils');
 var createDebug = require('./debug');
@@ -147,7 +148,7 @@ Plugin.prototype.init = function () {
   this.initFilters();
   this.initModels();
   this.initCalls();
-  //this.initRouters();
+  this.initRouters();
   this.initMiddlewares();
   this.initAssets();
   this.initViews();
@@ -192,9 +193,9 @@ Plugin.prototype.initModels = function () {
   var ns = me.ns;
 
   utils.objectEachKey(me.models, function (i) {
+    me.debug('register model [%s]: %s', me.name, i);
     var fn = me.models[i];
     var m = fn(ns, MySQLModel.create, me.debug);
-    me.debug('register model [%s]: %s', me.name, i);
     ns('model.' + i, m);
   });
 };
@@ -204,10 +205,25 @@ Plugin.prototype.initCalls = function () {
   var ns = me.ns;
 
   utils.objectEachKey(me.calls, function (i) {
+    me.debug('register call [%s]: %s', me.name, i);
     var fn = me.calls[i];
     var m = fn(ns, me.debug);
-    me.debug('register call [%s]: %s', me.name, i);
     ns('call.' + i, m);
+  });
+};
+
+Plugin.prototype.initRouters = function () {
+  var me = this;
+  var ns = me.ns;
+  var app = ns('app.express');
+
+  utils.objectEachKey(me.routers, function (i) {
+    me.debug('register router [%s]: %s', me.name, i);
+    var fn = me.routers[i];
+    var router = express.Router();
+    fn(ns, router, me.debug);
+    app.use(router);
+    ns('router.' + i, router);
   });
 };
 
@@ -216,9 +232,9 @@ Plugin.prototype.initMiddlewares = function () {
   var ns = me.ns;
 
   utils.objectEachKey(me.middlewares, function (i) {
+    me.debug('register middleware [%s]: %s', me.name, i);
     var fn = me.middlewares[i];
     var m = fn(ns, me.debug);
-    me.debug('register middleware [%s]: %s', me.name, i);
     ns('middleware.' + i, m);
   });
 };
