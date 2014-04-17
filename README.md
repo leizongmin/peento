@@ -4,6 +4,27 @@ peento
 博客系统
 
 
+插件
+=====
+
+目录结构：
+
+```
+hook -------------- 钩子目录，xxx.js => hook.xxx
+model ------------- 数据模型目录，xxx.js => model.xxx
+call -------------- 系统调用程序目录，xxx.js => call.xxx
+moddleware -------- 中间件目录，xxx.js => middleware.xxx
+router ------------ 路由处理目录，自由注册
+view -------------- 模板文件目录，xxx.liquid => view.xxx
+asset ------------- 资源文件目录，xxx.xx => asset.xxx.xx
+filter ------------ 模板函数目录，自由注册
+index.js ---------- 入口文件，初始化插件时调用
+```
+
+所有目录数据均为可选，按照载入顺序依次覆盖相同命名空间的数据。
+
+
+
 使用方法（未实现）
 ========
 
@@ -16,9 +37,6 @@ var app = peento();
 // 载入配置
 app.config(require('./config'));
 
-// 也可通过一下方式来配置
-app.useTheme('xxx');
-app.useHook('xxx');
 
 // 监听端口
 app.listen(80);

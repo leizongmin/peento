@@ -23,6 +23,7 @@ var MySQLModel = require('lei-mysql-model');
 var Pipe = require('lei-pipe');
 var errorhandler = require('./middleware/errorhandler');
 var utils = require('./lib/utils');
+var Plugin = require('./lib/plugin');
 var createDebug = require('./lib/debug');
 var debug = require('./lib/debug')('app');
 
@@ -55,6 +56,7 @@ function PeentoApplication (config) {
   app.use(csurf());
   app.use(timeout(30000));
 
+  /*
   this._loadFilters();
   this._initTpl();
 
@@ -63,6 +65,12 @@ function PeentoApplication (config) {
   this._loadCalls();
   this._loadRouters();
   this._loadHooks();
+  */
+  // default plugin
+  var plugin = new Plugin('default', ns, path.resolve(__dirname, 'default'));
+  ns('plugin.default', plugin);
+  require(plugin.dir)(ns, plugin, plugin.debug);
+  console.log(plugin);
 
   app.use(errorhandler());
 }
