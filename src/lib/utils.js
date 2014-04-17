@@ -17,3 +17,7 @@ utils.filenameToNamespace = function (dir, filename) {
   var name = filename.slice(dir.length + 1, - ext.length);
   return name.replace(/(\\\/)/g, '.');
 };
+
+utils.argumentsToArray = function (args) {
+  return Array.prototype.slice.call(args, 0);
+};

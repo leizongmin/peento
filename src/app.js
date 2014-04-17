@@ -6,6 +6,7 @@
 
 var fs = require('fs');
 var path = require('path');
+var async = require('async');
 var express = require('express');
 var bodyParser = require('body-parser');
 var cookieParser = require('cookie-parser');
@@ -16,8 +17,10 @@ var timeout = require('connect-timeout');
 var csurf = require('csurf');
 var rd = require('rd');
 var createNamespace = require('lei-ns').Namespace;
+var Pipe = require('lei-pipe');
 var errorhandler = require('./middleware/errorhandler');
 var utils = require('./lib/utils');
+var createDebug = require('./lib/debug');
 var debug = require('./lib/debug')('app');
 
 
@@ -31,8 +34,10 @@ function PeentoApplication (config) {
 
   // init global namespace
   var ns = this.ns = createNamespace();
+  ns('app', this);
   ns('config', config);
   ns('utils', utils);
+  ns('debug', createDebug);
 
   // init express
   var app = this.express = express();
@@ -48,9 +53,20 @@ function PeentoApplication (config) {
   app.use(timeout(30000));
   app.use(errorhandler());
 
+  this._loadCalls();
   this._loadRouters();
   this._loadHooks();
 }
+
+PeentoApplication.prototype.listen = function (port) {
+  debug('listen %s', port);
+  this.express.listen(port);
+};
+
+PeentoApplication.prototype.start = function () {
+  debug('start');
+  this.listen(this.ns('config.port'));
+};
 
 PeentoApplication.prototype._loadRouters = function () {
   debug('_loadRouters');
@@ -65,6 +81,19 @@ PeentoApplication.prototype._loadRouters = function () {
   });
 };
 
+PeentoApplication.prototype._loadCalls = function () {
+  debug('_loadCalls');
+  var me = this;
+  var ns = me.ns;
+  var DIR = path.resolve(__dirname, 'call');
+  rd.eachFileFilterSync(DIR, /\.js$/, function (f, s) {
+    debug(' - %s', f);
+    var n = utils.filenameToNamespace(DIR, f);
+    var m = require(f)(ns, createDebug('call:' + n));
+    ns('call.' + n, m);
+  });
+};
+
 PeentoApplication.prototype._loadHooks = function () {
   debug('_loadHooks');
   var me = this;
@@ -76,17 +105,6 @@ PeentoApplication.prototype._loadHooks = function () {
     var m = require(f);
     me._registerHook(n, m);
   });
-};
-
-PeentoApplication.prototype.listen = function (port) {
-  debug('listen %s', port);
-  this.express.listen(port);
-};
-
-PeentoApplication.prototype.start = function () {
-  debug('start');
-  this._initHooks();
-  this.listen(this.ns('config.port'));
 };
 
 PeentoApplication.prototype.useHook = function (name) {
@@ -122,11 +140,66 @@ PeentoApplication.prototype.useHook = function (name) {
 };
 
 PeentoApplication.prototype._registerHook = function (name, fn) {
+  var me = this;
+  var ns = me.ns;
   var hook = {};
-  fn(this.ns, hook);
-  this.ns('hook.' + name, hook);
+  ns('hook.' + name, hook);
+  fn(ns, function register (call, options, handler) {
+    var pipe = me._getCallPipe(call);
+    var args = utils.argumentsToArray(arguments);
+    args[0] = name;
+    pipe.add.apply(pipe, args);
+    hook[call] = args;
+  }, createDebug('hook.' + name));
 };
 
-PeentoApplication.prototype._initHooks = function () {
-  
+PeentoApplication.prototype._getCallPipe = function (name) {
+  this._callPipes = this._callPipes || {};
+  this._callPipes[name] = this._callPipes[name] || new Pipe();
+  return this._callPipes[name];
+};
+
+PeentoApplication.prototype.call = function (name, params, callback) {
+  var me = this;
+  var ns = me.ns;
+
+  var call = ns('call.' + name);
+  if (typeof call !== 'function') {
+    return callback(new TypeError('Cannot call ' + name));
+  }
+
+  async.series([
+
+    // before.xxxx
+    function (next) {
+      debug('call: before %s', name);
+      var before = me._getCallPipe('before.' + name);
+      before.start(params, function (err, data) {
+        params = data;
+        next(err);
+      });
+    },
+
+    // xxxx
+    function (next) {
+      debug('call: %s', name);
+      call(params, function (err, data) {
+        data = params;
+        next(err);
+      });
+    },
+
+    // after.xxx
+    function (next) {
+      debug('call: after %s', name);
+      var after = me._getCallPipe('after.' + name);
+      after.start(params, function (err, data) {
+        params = data;
+        next(err);
+      });
+    }
+
+  ], function (err) {
+    callback(err, params);
+  });
 };

@@ -13,4 +13,7 @@ app.start();
 
 
 
+console.log(app);
 console.log(app.ns());
+
+app.call('get_article_list', Math.random(), console.log);
