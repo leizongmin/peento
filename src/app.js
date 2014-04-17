@@ -16,6 +16,7 @@ var serveStatic = require('serve-static');
 var timeout = require('connect-timeout');
 var csurf = require('csurf');
 var rd = require('rd');
+var expressLiquid = require('express-liquid');
 var createNamespace = require('lei-ns').Namespace;
 var MySQLPool = require('lei-mysql');
 var MySQLModel = require('lei-mysql-model');
@@ -53,13 +54,17 @@ function PeentoApplication (config) {
   app.use('/assets', serveStatic('./assets'));
   app.use(csurf());
   app.use(timeout(30000));
-  app.use(errorhandler());
+
+  this._loadFilters();
+  this._initTpl();
 
   this._initDb();
   this._loadModels();
   this._loadCalls();
   this._loadRouters();
   this._loadHooks();
+
+  app.use(errorhandler());
 }
 
 PeentoApplication.prototype.listen = function (port) {
@@ -71,6 +76,63 @@ PeentoApplication.prototype.start = function () {
   debug('start');
   this.listen(this.ns('config.port'));
 };
+
+PeentoApplication.prototype._loadFilters = function () {
+  debug('_loadFilters');
+  var me = this;
+  var ns = this.ns;
+  var DIR = path.resolve(__dirname, 'filter');
+  function register (n, fn) {
+    ns('filter.' + n, fn);
+  }
+  rd.eachFileFilterSync(DIR, /\.js$/, function (f, s) {
+    debug(' - %s', f);
+    var n = utils.filenameToNamespace(DIR, f);
+    var m = require(f);
+    m(ns, register, createDebug('filter:' + f));
+  });
+};
+
+PeentoApplication.prototype._initTpl = function () {
+  debug('_initTpl');
+  var ns = this.ns;
+  var app = this.express;
+
+  var baseContext = expressLiquid.newContext();
+  var filters = ns('filter');
+  for (var i in filters) {
+    if (i.substr(-5) === 'Async') {
+      baseContext.setAsyncFilter(i.substr(0, i.length - 5), filters[i]);
+    } else {
+      baseContext.setFilter(i, filters[i]);
+    }
+  }
+
+  app.set('views', path.resolve(__dirname, 'views'));
+  app.set('view engine', 'liquid');
+  app.engine('liquid', expressLiquid({
+    context: baseContext
+  }));
+
+  app.use(function (req, res, next) {
+    res.context = expressLiquid.newContext();
+    res._render = res.render;
+
+    res.context.setLocals('_server', {
+      query:  req.query,
+      body:   req.body,
+      params: req.params
+    });
+
+    res.context.setLocals('_config', ns('config'));
+
+    res.render = function (tpl) {
+      res._render(tpl, {context: res.context});
+    };
+
+    next();
+  });
+}
 
 PeentoApplication.prototype._initDb = function () {
   debug('_initDb');
