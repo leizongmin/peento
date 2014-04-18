@@ -23,4 +23,17 @@ function callback (err, data) {
   console.log(data);
   process.exit();
 }
-app.call('tag.get_id', {name: 'email'}, callback);
+/*
+app.call('article.update', {
+  id: 13,
+  author_id: 1,
+  title: '大家好，这里是修改后的文章标题',
+  summary: '和尚和庙的故事',
+  content: '！！！！很久很久以前，有一座山，山里有座庙，庙里有个和尚在讲故事：很久很久以前……',
+  tags: '庙',
+  metas: {
+    fuck: 'yes'
+  }
+}, callback);
+*/
+app.call('article.get_list', {}, callback);

@@ -13,7 +13,7 @@ module.exports = function (ns, createModel, debug) {
     limit:      ns('config.model.limit'),
     fields: {
       article_id: 'number',
-      content:    'string'
+      content:    '*'
     },
     requiredFields: ['article_id', 'content']
   });

@@ -8,11 +8,12 @@ module.exports = function (ns, debug) {
   var async = require('async');
   var utils = require('../../../lib/utils');
   return function (params, callback) {
-    debug('add: [%s]', params.title);
+    debug('add: %s', params.title);
 
     if (!params.summary && params.content) {
       params.summary = utils.stripHtml(params.content).slice(0, 255);
     }
+    if (!params.content) params.content = ' ';
 
     var id;
     var app = ns('app');

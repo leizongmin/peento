@@ -11,7 +11,7 @@ module.exports = function (ns, debug) {
     var article_content = ns('model.article_content');
 
     if (!params.content) {
-      return callback(article_meta.missingRequiredFieldError('content'));
+      return callback(article_content.missingRequiredFieldError('content'));
     }
 
     article_content.countByArticleId(params.id, function (err, count) {

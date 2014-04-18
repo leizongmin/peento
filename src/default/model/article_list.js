@@ -22,7 +22,7 @@ module.exports = function (ns, createModel, debug) {
       sort:       'number'
     },
     queryFields: ['is_removed'],
-    requiredFields: ['title'],
+    requiredFields: ['author_id', 'title'],
     input: function (data, callback, type) {
       if (type === 'add') {
         data.created_at = model.timestamp();

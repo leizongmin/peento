@@ -23,16 +23,9 @@ module.exports = function (ns, debug) {
     async.series([
 
       function (next) {
-        app.call('tag.get_id', {name: params.name}, function (err, ret) {
-          if (err) return next(err);
-          if (ret > 0) {
-            tag_id = ret;
-            return next();
-          }
-          app.call('tag.add', {name: params.name}, function (err, ret) {
-            tag_id = ret;
-            next(err);
-          });
+        app.call('tag.add', {name: params.name}, function (err, ret) {
+          tag_id = ret;
+          next(err);
         });
       },
 
