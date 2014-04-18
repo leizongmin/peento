@@ -26,10 +26,12 @@ module.exports = function (ns, createModel, debug) {
       callback(null, data);
     },
     output: function (item, callback) {
-      try {
-        item.value = JSON.parse(item.value);
-      } catch (err) {
-        return callback(err, item);
+      if (item) {
+        try {
+          item.value = JSON.parse(item.value);
+        } catch (err) {
+          return callback(err, item);
+        }
       }
       callback(null, item);
     }

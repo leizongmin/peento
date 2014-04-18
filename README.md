@@ -83,10 +83,10 @@ app.listen(80);
 
 网站配置相关：
 
-- [ ] `config.get` 获取指定名称的配置，参数：name
-- [ ] `config.get_all` 获取所有配置项
-- [ ] `config.update` 更新配置，参数：name, value
-- [ ] `config.delete` 删除配置，参数：name
+- [x] `config.get` 获取指定名称的配置，参数：name
+- [x] `config.get_all` 获取所有配置项
+- [x] `config.update` 更新配置，参数：name, value
+- [x] `config.delete` 删除配置，参数：name
 
 
 钩子

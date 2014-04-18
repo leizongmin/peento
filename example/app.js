@@ -19,7 +19,8 @@ app.start();
 //app.call('get_article_list', Math.random(), console.log);
 //app.call('user.check_password', {email: 'test@ucdok.com', password: '1234a56'}, console.log);
 function callback (err, data) {
-  console.log(err, data);
+  if (err) console.log((err && err.stack) || err);
+  console.log(data);
   process.exit();
 }
-app.call('user.delete', {email: 'tests@ucdok.com'}, callback);
+app.call('config.get', {name: 'email'}, callback);
