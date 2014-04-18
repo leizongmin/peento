@@ -136,12 +136,18 @@ PeentoApplication.prototype._initTpl = function () {
   var app = this.express;
 
   var baseContext = this.context = expressLiquid.newContext();
-
-  app.set('views', path.resolve(__dirname, 'views'));
-  app.set('view engine', 'liquid');
-  app.engine('liquid', expressLiquid({
-    context: baseContext
-  }));
+  var renderLiquid = this.renderLiquid = expressLiquid({
+    context:     baseContext,
+    resolveFilename: function (name, settings) {
+      var views = ns('view');
+      var ext = path.extname(name);
+      if (!ext) name += '.liquid';
+      if (name[0] === '/') name = name.slice(1);
+      var f = views[name];
+      if (!f) f = views['view_not_found'];
+      return f;
+    }
+  });
 
   app.use(function (req, res, next) {
     res.context = expressLiquid.newContext();
@@ -156,7 +162,17 @@ PeentoApplication.prototype._initTpl = function () {
     res.context.setLocals('_config', ns('config'));
 
     res.render = function (tpl) {
-      res._render(tpl, {context: res.context});
+      renderLiquid(tpl, {
+        context: res.context,
+        cache:   true,
+        settings: {
+
+        }
+      }, function (err, html) {
+        if (err) return next(err);
+        res.header('content-type', 'text/html');
+        res.end(html);
+      });
     };
 
     next();

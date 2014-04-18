@@ -10,4 +10,8 @@ module.exports = function (ns, router) {
     });
   });
 
+  router.get('/test2', function (req, res, next) {
+    res.render('test');
+  });
+
 };

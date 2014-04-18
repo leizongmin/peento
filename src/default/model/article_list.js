@@ -14,7 +14,6 @@ module.exports = function (ns, createModel, debug) {
     fields: {
       id:         'number',
       title:      'string',
-      tags:       '*',
       summary:    '*',
       is_removed: 'number'
     },
@@ -22,7 +21,6 @@ module.exports = function (ns, createModel, debug) {
     requiredFields: ['title'],
     output: function (item, callback) {
       item.is_removed = !!item.is_removed;
-      item.tags = item.tags.split(/\s*,\s*/);
       callback(null, item);
     }
   });
