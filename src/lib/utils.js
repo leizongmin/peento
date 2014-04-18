@@ -32,3 +32,15 @@ utils.argumentsToArray = function (args) {
 utils.objectEachKey = function (obj, fn) {
   Object.keys(obj).forEach(fn);
 };
+
+utils.isString = function (str) {
+  return (typeof str === 'string');
+};
+
+utils.isInteger = function (str) {
+  return (Math.round(str) === Number(str));
+};
+
+utils.isNumber = function (str) {
+  return (!isNaN(str));
+};
