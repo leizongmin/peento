@@ -144,7 +144,8 @@ PeentoApplication.prototype._initTpl = function () {
       if (!ext) name += '.liquid';
       if (name[0] === '/') name = name.slice(1);
       var f = views[name];
-      if (!f) f = views['view_not_found'];
+      if (!f) f = views['view_not_found.liquid'];
+      debug('resolve view: [%s] %s', name, f);
       return f;
     }
   });
@@ -162,17 +163,20 @@ PeentoApplication.prototype._initTpl = function () {
     res.context.setLocals('_config', ns('config'));
 
     res.render = function (tpl) {
+      debug('render: %s', tpl);
+      res.setLocals('_view_name', tpl);
       renderLiquid(tpl, {
         context: res.context,
         cache:   true,
-        settings: {
-
-        }
+        settings: {}
       }, function (err, html) {
         if (err) return next(err);
         res.header('content-type', 'text/html');
         res.end(html);
       });
+    };
+    res.setLocals = function (n, v) {
+      return res.context.setLocals(n, v);
     };
 
     next();
