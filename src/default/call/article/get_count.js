@@ -10,8 +10,7 @@ module.exports = function (ns, debug) {
     debug('get count');
 
     var query = {};
-    if (params.author_id > 0) query.author_id = query.author_id;
-
+    if (params.author_id > 0) query.author_id = params.author_id;
 
     ns('model.article_list').count(query, callback);
 
