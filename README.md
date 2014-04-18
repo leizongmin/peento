@@ -93,6 +93,36 @@ app.listen(80);
 - `config.delete` 删除配置，参数：name
 
 
+基本页面
+=====
+
+- `/` 首页
+- `/articles` 文章列表
+- `/article/:id` 文章内容页面
+
+
+
+模板函数
+========
+
+用户相关：
+
+- `get_user_email(id)` 取用户邮箱地址
+- `get_user_display_name(id)` 取用户昵称
+
+文章相关：
+
+- `get_article_content(id)` 取文章内容
+- `get_article_tags(id)` 取文章标签列表
+- `get_article_metas(id)` 取文章所有附加属性
+- `get_article_meta(id, name)` 取文章指定的附加属性
+
+其他：
+
+- `gravatar` 取用户邮箱对应的头像地址
+
+
+
 钩子
 =====
 

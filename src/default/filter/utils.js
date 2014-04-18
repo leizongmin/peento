@@ -5,9 +5,10 @@
  */
 
 module.exports = function (ns, registerFilter, debug) {
+  var utils = require('../../lib/utils');
 
-  registerFilter('test', function () {
-    return 'test:' + Math.random();
+  registerFilter('gravatar', function (email) {
+    return '//www.gravatar.com/avatar/' + utils.md5(email || '');
   });
 
 };
