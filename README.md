@@ -55,7 +55,7 @@ app.listen(80);
 - [x] `user.get_display_name` 查询用户的昵称，参数：email|id
 - [x] `user.get_email` 查询用户的Email，参数：id
 - [x] `user.update` 更新用户信息，参数：id, email, password, display_name
-- [ ] `user.delete` 删除用户，参数：email|id
+- [x] `user.delete` 删除用户，参数：email|id
 
 文章相关：
 
