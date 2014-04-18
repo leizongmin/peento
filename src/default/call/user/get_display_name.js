@@ -1,5 +1,5 @@
 /**
- * Call: user.get_info
+ * Call: user.get_display_name
  *
  * @author Zongmin Lei <leizongmin@gmail.com>
  */

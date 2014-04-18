@@ -22,4 +22,4 @@ function callback (err, data) {
   console.log(err, data);
   process.exit();
 }
-app.call('user.get_display_name', {email: 'test@ucdok.com'}, callback);
+app.call('user.get_email', {id: 1}, callback);
