@@ -23,4 +23,4 @@ function callback (err, data) {
   console.log(data);
   process.exit();
 }
-app.call('config.get', {name: 'email'}, callback);
+app.call('tag.get_id', {name: 'email'}, callback);

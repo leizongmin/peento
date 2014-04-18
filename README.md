@@ -76,10 +76,12 @@ app.listen(80);
 
 标签相关：
 
-- [ ] `tag.get_id` 获取指定标签的ID，参数：name
-- [ ] `tag.get_list` 获取标签列表
-- [ ] `tag.get_count` 获取标签的数量
-- [ ] `tag.delete` 删除标签，参数：name|id
+- [x] `tag.add` 添加标签，参数：name
+- [x] `tag.get_id` 获取指定标签的ID，参数：name
+- [x] `tag.get_name` 获取指定名称标签的ID，参数：id
+- [x] `tag.get_list` 获取标签列表
+- [x] `tag.get_count` 获取标签的数量
+- [x] `tag.delete` 删除标签，参数：name|id
 
 网站配置相关：
 
