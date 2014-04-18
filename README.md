@@ -25,7 +25,7 @@ index.js ---------- 入口文件，初始化插件时调用
 
 
 
-使用方法（未实现）
+使用方法
 ========
 
 ```JavaScript
@@ -49,18 +49,44 @@ app.listen(80);
 
 用户相关：
 
-[*] `user.add` 添加用户，参数：email, password, display_name
-[*] `user.check_password` 检查密码是否正确，参数：email, password
-[*] `user.get_info` 查询用户信息，参数：email|id
+- [x] `user.add` 添加用户，参数：email, password, display_name
+- [x] `user.check_password` 检查密码是否正确，参数：email, password
+- [ ] `user.get_info` 查询用户信息，参数：email|id
+- [ ] `user.get_display_name` 查询用户的昵称，参数：email|id
+- [ ] `user.get_email` 查询用户的Email，参数：id
+- [ ] `user.update` 更新用户信息，参数：id, email, password, display_name
+- [ ] `user.delete` 删除用户，参数：email|id
 
 文章相关：
 
-[] `article.add` 添加文章，参数：author_id, title, summary, sort, content, tags，
+- [ ] `article.add` 添加文章，参数：author_id, title, summary, sort, content, tags，
 说明：tags可以为数组，如果没指定summary时自动从content中生成
-[] `article.update` 更新文章，参数：同上
-[] `article.update_content` 更新文章内容，参数：id, content
-[] `article.update_meta`
+- [ ] `article.update` 更新文章，参数：同上
+- [ ] `article.update_tags` 更新文章标签列表，参数：id, tags，说明：tags可以为数组
+- [ ] `article.update_content` 更新文章内容，参数：id, content
+- [ ] `article.update_meta` 更新文章附加属性，参数：id, name, value
+- [ ] `article.get` 获取文章内容（完整），参数：id
+- [ ] `article.get_tags` 获取文章的标签列表，参数：id
+- [ ] `article.get_content` 获取文章内容，参数：id
+- [ ] `article.get_meta` 获取文章附加属性，参数：id, name
+- [ ] `article.get_metas` 获取文章所有附加属性，参数：id
+- [ ] `article.get_list` 获取文章列表，参数：offset, limit, author_id, tag
+- [ ] `article.get_count` 获取文章数量，参数：offset, limit, author_id, tag
+- [ ] `article.delete` 删除文章，参数：id
 
+标签相关：
+
+- [ ] `tag.get_id` 获取指定标签的ID，参数：name
+- [ ] `tag.get_list` 获取标签列表
+- [ ] `tag.get_count` 获取标签的数量
+- [ ] `tag.delete` 删除标签，参数：name|id
+
+网站配置相关：
+
+- [ ] `config.get` 获取指定名称的配置，参数：name
+- [ ] `config.get_all` 获取所有配置项
+- [ ] `config.update` 更新配置，参数：name, value
+- [ ] `config.delete` 删除配置，参数：name
 
 
 钩子
