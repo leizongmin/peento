@@ -143,6 +143,11 @@ Plugin.prototype.loadViews = function () {
 
 /******************************************************************************/
 
+Plugin.prototype._createDebug = function (name) {
+  name = name.replace(/\./g, ':');
+  return createDebug('plugin:' + this.name + ':' + name);
+};
+
 Plugin.prototype.init = function () {
   this.initHooks();
   this.initFilters();
@@ -170,7 +175,7 @@ Plugin.prototype.initHooks = function () {
       args[0] = me.name;
       pipe.add.apply(pipe, args);
       hook[call] = args;
-    }, me.debug);
+    }, me._createDebug(i));
   });
 };
 
@@ -184,7 +189,7 @@ Plugin.prototype.initFilters = function () {
     fn(ns, function registerFilter (n, fn) {
       me.debug('register filter [%s.%s]: %s', me.name, i, n);
       ns('filter.' + n, fn);
-    }, me.debug);
+    }, me._createDebug(i));
   });
 };
 
@@ -195,7 +200,7 @@ Plugin.prototype.initModels = function () {
   utils.objectEachKey(me.models, function (i) {
     me.debug('register model [%s]: %s', me.name, i);
     var fn = me.models[i];
-    var m = fn(ns, MySQLModel.create, me.debug);
+    var m = fn(ns, MySQLModel.create, me._createDebug(i));
     ns('model.' + i, m);
   });
 };
@@ -207,7 +212,7 @@ Plugin.prototype.initCalls = function () {
   utils.objectEachKey(me.calls, function (i) {
     me.debug('register call [%s]: %s', me.name, i);
     var fn = me.calls[i];
-    var m = fn(ns, me.debug);
+    var m = fn(ns, me._createDebug(i));
     ns('call.' + i, m);
   });
 };
@@ -221,7 +226,7 @@ Plugin.prototype.initRouters = function () {
     me.debug('register router [%s]: %s', me.name, i);
     var fn = me.routers[i];
     var router = express.Router();
-    fn(ns, router, me.debug);
+    fn(ns, router, me._createDebug(i));
     app.use(router);
     ns('router.' + i, router);
   });
@@ -234,7 +239,7 @@ Plugin.prototype.initMiddlewares = function () {
   utils.objectEachKey(me.middlewares, function (i) {
     me.debug('register middleware [%s]: %s', me.name, i);
     var fn = me.middlewares[i];
-    var m = fn(ns, me.debug);
+    var m = fn(ns, me._createDebug(i));
     ns('middleware.' + i, m);
   });
 };

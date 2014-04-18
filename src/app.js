@@ -199,6 +199,12 @@ PeentoApplication.prototype._initDb = function () {
   var db = new MySQLPool(ns('config.mysql'));
   this.db = db;
   ns('db', db);
+
+  var debugSql = createDebug('db:query');
+  db.use('sql', function (sql, next) {
+    debugSql(sql);
+    next(null, sql);
+  });
 };
 
 /******************************************************************************/
@@ -253,22 +259,3 @@ PeentoApplication.prototype.call = function (name, params, callback) {
     callback(err, params);
   });
 };
-
-/******************************************************************************/
-/*
-
-PeentoApplication.prototype._loadRouters = function () {
-  debug('_loadRouters');
-  var app = this.express;
-  var ns = this.ns;
-  var DIR = path.resolve(__dirname, 'router');
-  rd.eachFileFilterSync(DIR, /\.js$/, function (f, s) {
-    debug(' - %s', f);
-    var router = express.Router();
-    require(f)(ns, router);
-    app.use(router);
-  });
-};
-
-*/
-/******************************************************************************/
