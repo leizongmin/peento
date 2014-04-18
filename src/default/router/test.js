@@ -11,7 +11,7 @@ module.exports = function (ns, router) {
   });
 
   router.get('/test2', function (req, res, next) {
-    res.render('test');
+    app.call('user.add', {email: 'test@ucdok.com', password: '123456', display_name: 'Lei'}, console.log);
   });
 
 };
