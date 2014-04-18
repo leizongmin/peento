@@ -61,6 +61,7 @@ app.listen(80);
 
 - `article.add` 添加文章，参数：author_id, title, summary, sort, content, tags，
 说明：tags可以为数组，如果没指定summary时自动从content中生成
+- `article.add_tag` 给文章添加标签，参数：id, name
 - `article.update` 更新文章，参数：同上
 - `article.update_tags` 更新文章标签列表，参数：id, tags，说明：tags可以为数组
 - `article.update_content` 更新文章内容，参数：id, content
