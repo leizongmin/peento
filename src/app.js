@@ -53,7 +53,6 @@ function PeentoApplication (config) {
     keys: ['optional secret string']
   }));
   app.use('/assets', assetsMiddleware(ns));
-  //app.use(csurf());
   app.use(timeout(30000));
 
   this._initTpl();
