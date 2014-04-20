@@ -153,10 +153,10 @@ Plugin.prototype.init = function () {
   this.initFilters();
   this.initModels();
   this.initCalls();
-  this.initRouters();
   this.initMiddlewares();
   this.initAssets();
   this.initViews();
+  this.initRouters();
 };
 
 Plugin.prototype.initHooks = function () {
@@ -225,10 +225,11 @@ Plugin.prototype.initRouters = function () {
   utils.objectEachKey(me.routers, function (i) {
     me.debug('register router [%s]: %s', me.name, i);
     var fn = me.routers[i];
-    var router = express.Router();
-    fn(ns, router, me._createDebug(i));
-    app.use(router);
-    ns('router.' + i, router);
+    //var router = express.Router();
+    //fn(ns, router, me._createDebug(i));
+    //app.use(router);
+    //ns('router.' + i, router);
+    fn(ns, app, me._createDebug(i));
   });
 };
 

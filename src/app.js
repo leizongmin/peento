@@ -14,7 +14,6 @@ var session = require('cookie-session');
 var morgan = require('morgan');
 var serveStatic = require('serve-static');
 var timeout = require('connect-timeout');
-var csurf = require('csurf');
 var rd = require('rd');
 var expressLiquid = require('express-liquid');
 var createNamespace = require('lei-ns').Namespace;
@@ -54,7 +53,7 @@ function PeentoApplication (config) {
     keys: ['optional secret string']
   }));
   app.use('/assets', assetsMiddleware(ns));
-  app.use(csurf());
+  //app.use(csurf());
   app.use(timeout(30000));
 
   this._initTpl();
@@ -159,7 +158,6 @@ PeentoApplication.prototype._initTpl = function () {
       body:   req.body,
       params: req.params
     });
-
     res.context.setLocals('_config', ns('config'));
 
     res.render = function (tpl) {
