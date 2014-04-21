@@ -31,7 +31,7 @@ module.exports = function (ns, router) {
             res.render('sign/signin');
           } else {
             req.session.signin_user = info;
-            res.redirect('/');
+            res.redirect(req.query.return_url || '/');
           }
         });
       }
