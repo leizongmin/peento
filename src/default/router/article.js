@@ -20,7 +20,7 @@ module.exports = function (ns, router) {
 
     ], function (err) {
       if (err) return next(err);
-      res.render('index');
+      res.render('front/index');
     });
   });
 

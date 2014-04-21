@@ -1,4 +1,4 @@
-{% include "inc/header" %}
+{% include "front/inc/header" %}
 
 {% if _server.session.signin_user %}
 Hello, {{_server.session.signin_user.display_name|escape}}
@@ -9,7 +9,7 @@ Hello, {{_server.session.signin_user.display_name|escape}}
   {{item.title|escape}}<br>
 {% endfor %}
 
-{% include "inc/footer" %}
+{% include "front/inc/footer" %}
 
 <!-- common javascript -->
 <script src="{{'default/main.js'|asset_url}}"></script>
