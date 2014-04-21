@@ -159,7 +159,8 @@ PeentoApplication.prototype._initTpl = function () {
       res.context.setLocals('_server', {
         query:  req.query,
         body:   req.body,
-        params: req.params
+        params: req.params,
+        session: req.session
       });
       res.context.setLocals('_config', ns('config'));
 
