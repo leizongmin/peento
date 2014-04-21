@@ -6,13 +6,36 @@
 
 module.exports = function (ns, router) {
   var async = require('async');
+  var utils = require('../../lib/utils');
   var app = ns('app');
   var csrf = ns('middleware.csrf');
   var multiparty = ns('middleware.multiparty');
 
 
-  router.get('/signin', function (req, res, next) {
+  router.get('/signin', csrf, function (req, res, next) {
     res.render('sign/signin');
+  });
+
+  router.post('/signin', multiparty, csrf, function (req, res, next) {
+    app.call('user.check_password', req.body, function (err, ok) {
+      if (err) {
+        res.setLocals('error', err);
+        res.render('sign/signin');
+      } else if (!ok) {
+        res.setLocals('error', 'E-mail address or password is not correct');
+        res.render('sign/signin');
+      } else {
+        app.call('user.get_info', req.body, function (err, info) {
+          if (err) {
+            res.setLocals('error', err);
+            res.render('sign/signin');
+          } else {
+            req.session.signin_user = info;
+            res.redirect('/');
+          }
+        });
+      }
+    });
   });
 
 
