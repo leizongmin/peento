@@ -21,7 +21,18 @@ module.exports = function (ns, router) {
   });
 
   router.post('/signup', multiparty, csrf, function (req, res, next) {
-    res.json(req.body);
+    app.call('user.add', req.body, function (err, id) {
+      if (err) {
+        res.setLocals('error', err);
+        res.render('sign/signup');
+      } else {
+        app.call('user.get_info', {id: id}, function (err, userInfo) {
+          if (err) res.setLocals('error', err);
+          res.setLocals('user_info', userInfo);
+          res.render('sign/signup_success');
+        });
+      }
+    });
   });
 
 };

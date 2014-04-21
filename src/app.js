@@ -152,16 +152,17 @@ PeentoApplication.prototype._initTpl = function () {
     res.context = expressLiquid.newContext();
     res._render = res.render;
 
-    res.context.setLocals('_server', {
-      query:  req.query,
-      body:   req.body,
-      params: req.params
-    });
-    res.context.setLocals('_config', ns('config'));
-
     res.render = function (tpl) {
       debug('render: %s', tpl);
+
       res.setLocals('_view_name', tpl);
+      res.context.setLocals('_server', {
+        query:  req.query,
+        body:   req.body,
+        params: req.params
+      });
+      res.context.setLocals('_config', ns('config'));
+
       renderLiquid(tpl, {
         context: res.context,
         cache:   true,
@@ -172,6 +173,7 @@ PeentoApplication.prototype._initTpl = function () {
         res.end(html);
       });
     };
+
     res.setLocals = function (n, v) {
       return res.context.setLocals(n, v);
     };
