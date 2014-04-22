@@ -10,7 +10,7 @@ module.exports = function (ns, debug) {
   return function (params, callback) {
     debug('get metas: [%s]', params.id);
 
-    ns('model.article_meta').listByArticleId(params.id, function (err, list) {
+    ns('model.article_meta').listByArticleId(params.id, {limit: 10000}, function (err, list) {
       if (err) return callback(err);
       var metas = {};
       list.forEach(function (item) {
