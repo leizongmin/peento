@@ -26,7 +26,7 @@ module.exports = function (ns, registerFilter, debug) {
     });
   }
   get_article_tags.enableCache = true;
-  registerFilter('get_article_tags', get_article_tags);
+  registerFilter('get_article_tagsAsync', get_article_tags);
 
 
   function get_article_metas (id, callback, context) {
@@ -36,7 +36,7 @@ module.exports = function (ns, registerFilter, debug) {
     });
   }
   get_article_metas.enableCache = true;
-  registerFilter('get_article_metas', get_article_metas);
+  registerFilter('get_article_metasAsync', get_article_metas);
 
 
   function get_article_meta (id, name, callback, context) {
@@ -46,6 +46,6 @@ module.exports = function (ns, registerFilter, debug) {
     });
   }
   get_article_meta.enableCache = true;
-  registerFilter('get_article_meta', get_article_meta);
+  registerFilter('get_article_metaAsync', get_article_meta);
 
 };
