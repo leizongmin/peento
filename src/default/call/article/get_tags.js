@@ -10,12 +10,12 @@ module.exports = function (ns, debug) {
   return function (params, callback) {
     debug('get tags: [%s]', params.id);
 
-    ns('model.article_tag').listByArticleId(params.id, function (err, list) {
+    ns('model.article_tag').listByArticleId(params.id, {limit: 10000}, function (err, list) {
       if (err) return callback(err);
 
       var tag_list = ns('model.tag_list');
       async.mapSeries(list, function (item, next) {
-        tag_list.getById(item.id, function (err, tag) {
+        tag_list.getById(item.tag_id, function (err, tag) {
           next(err, tag && tag.name);
         });
       }, callback);
