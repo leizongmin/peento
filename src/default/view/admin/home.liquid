@@ -1,13 +1,11 @@
+{% assign title = "Home" %}
 {% include "admin/inc/header" %}
 
-{% if _server.session.signin_user %}
-Hello, {{_server.session.signin_user.display_name|escape}}
-<hr>
-{% endif %}
+<div class="container">
+  aaaaaaaaaaaa
+</div>
 
-
-
-{% include "inc/footer" %}
+{% include "admin/inc/footer" %}
 
 <!-- common javascript -->
 <script src="{{'default/main.js'|asset_url}}"></script>
