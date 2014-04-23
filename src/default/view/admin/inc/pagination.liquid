@@ -1,6 +1,5 @@
 {% assign pagination_info = count|make_pagination %}
 <div class="text-center">
-  <hr>
   <ul class="pagination">
     <li><a href="{{pagination_info.previous.url|escape}}">&laquo;</a></li>
     {% for item in pagination_info.list %}
