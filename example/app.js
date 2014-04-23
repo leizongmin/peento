@@ -37,3 +37,4 @@ app.call('article.update', {
 }, callback);
 */
 //app.call('article.get_list', {author_id: 1, limit: 2}, callback);
+//app.call('user.get_count', {}, callback);
