@@ -23,4 +23,15 @@ $(document).ready(function () {
     });
   });
 
+  // delete user
+  $('.delete-user').click(function () {
+    var $me = $(this);
+    var id = $me.data('id');
+    if (!confirm('Are you sure delete user #' + id + '?')) return;
+    ajaxRequest.delete('/admin/user/' + id + '.json', function (err, ret) {
+      if (err) return alert(err);
+      $me.closest('.user-item').hide();
+    });
+  });
+
 });
