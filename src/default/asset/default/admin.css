@@ -18,3 +18,7 @@ body {
   border: 0;
   max-width: 100%;
 }
+
+.page-admin-tag .tag-list .btn {
+  margin-bottom: 6px;
+}
