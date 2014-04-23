@@ -12,4 +12,15 @@ $(document).ready(function () {
     });
   });
 
+  // delete article
+  $('.delete-article').click(function () {
+    var $me = $(this);
+    var id = $me.data('id');
+    if (!confirm('Are you sure delete article #' + id + '?')) return;
+    ajaxRequest.delete('/admin/article/' + id + '.json', function (err, ret) {
+      if (err) return alert(err);
+      $me.closest('.article-item').hide();
+    });
+  });
+
 });

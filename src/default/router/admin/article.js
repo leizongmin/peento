@@ -55,4 +55,12 @@ module.exports = function (ns, router) {
     });
   });
 
+  router.delete('/admin/article/:id.json', checkSignin, function (req, res, next) {
+    app.call('article.delete', {id: req.params.id}, function (err, ret) {
+      if (err) return next(err);
+
+      res.json(ret);
+    });
+  });
+
 };
