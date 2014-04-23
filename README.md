@@ -119,6 +119,10 @@ app.listen(80);
 - `get_article_metas(id)` 取文章所有附加属性
 - `get_article_meta(id, name)` 取文章指定的附加属性
 
+标签相关：
+
+- `get_tag_all` 取所有标签
+
 其他：
 
 - `gravatar` 取用户邮箱对应的头像地址
