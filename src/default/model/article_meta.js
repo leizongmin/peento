@@ -42,18 +42,22 @@ module.exports = function (ns, createModel, debug) {
       callback(null, data);
     },
     output: function (item, callback) {
-      if (item.type === 'double') {
-        item.value = item.value_double;
-      } else if (item.type === 'int') {
-        item.value = item.value_int;
+      if (item) {
+        if (item.type === 'double') {
+          item.value = item.value_double;
+        } else if (item.type === 'int') {
+          item.value = item.value_int;
+        } else {
+          item.value = item.value_text;
+        }
+        callback(null, {
+          article_id: item.article_id,
+          name:       item.name,
+          value:      item.value
+        });
       } else {
-        item.value = item.value_text;
+        callback(null, item);
       }
-      callback(null, {
-        article_id: item.article_id,
-        name:       item.name,
-        value:      item.value
-      });
     }
   });
 

@@ -36,9 +36,11 @@ module.exports = function (ns, createModel, debug) {
       callback(null, data);
     },
     output: function (item, callback) {
-      item.is_removed = !!item.is_removed;
-      item.created_at = new Date(item.created_at * 1000);
-      item.updated_at = new Date(item.updated_at * 1000);
+      if (item) {
+        item.is_removed = !!item.is_removed;
+        item.created_at = new Date(item.created_at * 1000);
+        item.updated_at = new Date(item.updated_at * 1000);
+      }
       callback(null, item);
     }
   });
