@@ -13,7 +13,7 @@ module.exports = function (ns, debug) {
     ns('app').call('article.get', params, function (err, article) {
       if (err) return callback(err);
 
-      ns('model.article_list').deleteById(article.id, callback);
+      ns('model.article_list').updateById(article.id, {is_removed: 1}, callback);
     });
 
   }
