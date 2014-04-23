@@ -5,6 +5,9 @@
   <h1 class="text-center">{{title|escape}}</h1>
   <form class="form-horizontal" role="form" method="post" enctype="multipart/form-data">
     <input type="hidden" name="_csrf" value="{{_csrf|escape}}">
+    {% if error %}
+      <div class="alert alert-danger">{{error|escape}}</div>
+    {% endif %}
     <div class="form-group">
       <label for="ipt-title" class="col-sm-2 control-label">Title</label>
       <div class="col-sm-10">

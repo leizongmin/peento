@@ -48,9 +48,13 @@ module.exports = function (ns, router) {
   router.post('/admin/article/:id/edit', checkSignin, multiparty, csrf, function (req, res, next) {
     req.body.id = req.params.id;
     app.call('article.update', req.body, function (err, ret) {
-      if (err) return next(err);
-
-      res.redirect(req.url);
+      if (err) {
+        res.setLocals('error', err);
+        res.setLocals('article', req.body);
+        res.render('admin/article/edit');
+      } else {
+        res.redirect(req.url);
+      }
     });
   });
 
