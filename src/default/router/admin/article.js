@@ -37,7 +37,6 @@ module.exports = function (ns, router) {
 
 
   router.get('/admin/article/:id/edit', checkSignin, csrf, function (req, res, next) {
-    console.log(req.params);
     app.call('article.get', {id: req.params.id}, function (err, article) {
       if (err) return next(err);
 
@@ -60,6 +59,24 @@ module.exports = function (ns, router) {
       if (err) return next(err);
 
       res.json(ret);
+    });
+  });
+
+
+  router.get('/admin/article/new', checkSignin, csrf, function (req, res, next) {
+    res.render('admin/article/new');
+  });
+
+  router.post('/admin/article/new', checkSignin, multiparty, csrf, function (req, res, next) {
+    req.body.author_id = req.session.signin_user.id;
+    app.call('article.add', req.body, function (err, ret) {
+      if (err) {
+        res.setLocals('error', err);
+        res.setLocals('article', req.body);
+        res.render('admin/article/new');
+      } else {
+        res.redirect('/admin/article/list');
+      }
     });
   });
 
