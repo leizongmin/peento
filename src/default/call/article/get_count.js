@@ -11,6 +11,8 @@ module.exports = function (ns, debug) {
 
     var query = {};
     if (params.author_id > 0) query.author_id = params.author_id;
+    if (params.tags) query.tags = params.tags;
+    if (params.search) query.search = params.search;
 
     ns('model.article_list').count(query, callback);
 

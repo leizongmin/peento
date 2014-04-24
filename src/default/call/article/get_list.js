@@ -13,6 +13,8 @@ module.exports = function (ns, debug) {
 
     var query = {};
     if (params.author_id > 0) query.author_id = params.author_id;
+    if (params.tags) query.tags = params.tags;
+    if (params.search) query.search = params.search;
 
     if (!params.order) params.order = 'updated_at:desc';
     params.order = 'sort:desc,' + params.order;

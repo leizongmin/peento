@@ -74,8 +74,8 @@ app.listen(80);
 - `article.get_content` 获取文章内容，参数：id
 - `article.get_meta` 获取文章附加属性，参数：id, name
 - `article.get_metas` 获取文章所有附加属性，参数：id
-- `article.get_list` 获取文章列表，参数：offset, limit, author_id, tag
-- `article.get_count` 获取文章数量，参数：offset, limit, author_id, tag
+- `article.get_list` 获取文章列表，参数：offset, limit, author_id, tags, search
+- `article.get_count` 获取文章数量，参数：offset, limit, author_id, tags, search
 - `article.delete` 删除文章，参数：id
 
 标签相关：
