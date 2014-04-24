@@ -25,7 +25,7 @@
               <th width="100">Author</th>
               <th width="155">Updated</th>
               <th width="60">Sort</th>
-              <th width="110">&nbsp;</th>
+              <th width="60">&nbsp;</th>
             </tr>
           </thead>
           <tbody>
@@ -48,7 +48,6 @@
               <td>{{item.sort}}</td>
               <td>
                 <a href="/admin/article/{{item.id}}/edit" class="btn btn-xs btn-info">Edit</a>
-                <button class="btn btn-xs btn-danger delete-article" data-id="{{item.id}}">Delete</button>
               </td>
             </tr>
             {% endfor %}

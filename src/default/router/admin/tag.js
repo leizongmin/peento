@@ -17,20 +17,20 @@ module.exports = function (ns, router) {
   });
 
 
-  router.get('/admin/tag/list', checkSignin, function (req, res, next) {
-    res.render('admin/tag/list');
-    /*async.series([
+  router.get('/admin/tag/:tag', checkSignin, function (req, res, next) {
+    async.series([
 
       function (next) {
-        app.call('tag.get_list', req.query, function (err, list) {
-          res.setLocals('tags', list);
+        req.query.tags = req.params.tag;
+        app.call('article.get_list', req.query, function (err, list) {
+          res.setLocals('articles', list);
           next(err);
         });
       },
 
       function (next) {
-        app.call('tag.get_count', req.query, function (err, list) {
-          res.setLocals('tag_count', list);
+        app.call('article.get_count', req.query, function (err, list) {
+          res.setLocals('article_count', list);
           next(err);
         });
       }
@@ -39,7 +39,7 @@ module.exports = function (ns, router) {
       if (err) return next(err);
       res.render('admin/tag/list');
     });
-    */
+
   });
 
 };
